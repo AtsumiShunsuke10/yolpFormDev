@@ -17,6 +17,7 @@
                 </div>
             </div>
         </div>
+        <apex:outputField value="{!InvalidPostCode}"/>
         <apex:selectList id="chooseColor" value="{!Address}" size="1">
             <apex:selectOptions value="{!AddressOptions}"/>
         </apex:selectList> 
