@@ -22,8 +22,8 @@ public without sharing class SearchAddressByPostCodeController {
         system.debug(res.getBody());
         Map<String, Object> resultJSON = (Map<String, Object>) JSON.deserializeUntyped(res.getBody());
         
-        AssressList.clear();
         List<Object> AddressList = (List<Object>)resultJSON.get('Feature');
+        AddressOptions.clear();
         if (AddressList.size() == 0) {
             //ここでエラー制御
         } else if (AddressList.size()==1) {
