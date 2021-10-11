@@ -26,6 +26,7 @@ public without sharing class SearchAddressByPostCodeController {
         AddressOptions.clear();
         if (AddressList.size() == 0) {
             //ここでエラー制御
+            AddressOptions.addError('有効な郵便番号を入力してください。');
         } else if (AddressList.size()==1) {
             Map<String,Object> resultProperty = (Map<String,Object>)((Map<String,Object>)AddressList[0]).get('Property');
             String result = (String)resultProperty.get('Address');
