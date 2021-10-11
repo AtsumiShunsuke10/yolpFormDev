@@ -14,7 +14,7 @@ public without sharing class SearchAddressByPostCodeController {
         HttpRequest req = new HttpRequest();
         req.setMethod(method);
         req.setHeader('Date', formattedDateString);
-        req.setEndpoint('https://map.yahooapis.jp/search/zip/V1/zipCodeSearch?query='+this.PostCode+'&appid='+appid+'&output=json');
+        req.setEndpoint('https://map.yahooapis.jp/search/zip/V1/zipCodeSearch?query='+this.PostCode+'&appid='+appid+'&output=json'+'&results=100');
         req.setHeader('Content-Encoding', 'UTF-8');
 
         Http http = new Http();
