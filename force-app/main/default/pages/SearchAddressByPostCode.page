@@ -1,7 +1,6 @@
 <!-- Page: -->
 <apex:page controller="SearchAddressByPostCodeController">
     
-
     <apex:includeLightning /> 
     <apex:slds />
     <apex:form>
@@ -10,9 +9,9 @@
             <div class="w-100 slds-scope row">
                 <div class="w-30 my-box postcode-padding"><apex:inputText styleClass="form-control" value="{!PostCode}" id="storePostCode"/></div>
                 <div>
-                    <apex:commandButton id="srchOffAddrBtn" 
+                    <apex:commandButton id="srchOffAddrBtn"
                         StyleClass="offset-1 btn btn-danger text-white" 
-                        style="min-width: 50px;font-size: 1rem" 
+                        style="min-width: 50px;font-size: 1rem"
                         action="{!getAddressByPostCode}"
                         value="住所を検索"></apex:commandButton>
                 </div>
