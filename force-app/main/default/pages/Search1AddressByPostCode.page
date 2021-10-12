@@ -14,8 +14,6 @@
                 </div>
             </div>
         </div>
-        住所候補リスト
-        <select id="ziplist" onchange="setByAddressList(applicantAddress)"><option value="">--なし--</option></select>
         <div class="row infoDiv">
             <apex:outputLabel value="所在地又は住所（番地以降は入力してください。）" for="applicantAddress" />
             <div>
@@ -49,7 +47,7 @@
                 data: param,
                 dataType: 'jsonp',
                 success: function (results) {
-                    dispZipList(results);
+                    dispresultAddress(results);
                     console.log(results);
                 },
                 error: function () {
@@ -58,29 +56,41 @@
             });
         }
 
-        
-
-        // 郵便番号をリスト表示
-        function dispZipList(ydf) {
-            var zipList = $('#ziplist');
-            zipList.empty();
-            zipList.append('<option value="default">--なし--</option>');
+        //住所検索が重複ヒットした場合同じ値のみ追加する
+        function dispresultAddress(ydf) {
+            var applicantAddress = $('#applicantAddress');
+            applicantAddress.empty();
 
             if (ydf.ResultInfo.Count == 1 && ydf.Feature[0].Property.Address.startsWith('東京都')) {
-                zipList.append('<option value="">' + ydf.Feature[0].Property.Address + '</option>');
+                $('textarea[id$="' + applicantAddress + '"]').val(ydf.Feature[0].Property.Address);
             } else if (ydf.ResultInfo.Count > 1 && ydf.Feature[0].Property.Address.startsWith('東京都')){
                 for (var i = 0; i < ydf.ResultInfo.Count; i++) {
-                    zipList.append('<option value="' + ydf.Feature[i].Property.Address + '">' + ydf.Feature[i].Property.Address + '</option>');
+                    $('textarea[id$="' + applicantAddress + '"]').val(ydf.Feature[i].Property.Address);
                 }
             } else {
-                zipList.append('<option value="notFound">該当の郵便番号は見つかりませんでした。</option>');
+                //エラー制御
             }
         }
 
-        function setByAddressList(applicantAddress) {
-            var selectedValue = $("ziplist").val();
-            $('textarea[id$="' + applicantAddress + '"]').val(selectedValue);
-        }
+        
+
+        // 郵便番号をリスト表示
+        // function dispZipList(ydf) {
+        //     var zipList = $('#ziplist');
+        //     zipList.empty();
+        //     zipList.append('<option value="default">--なし--</option>');
+
+        //     if (ydf.ResultInfo.Count == 1 && ydf.Feature[0].Property.Address.startsWith('東京都')) {
+        //         zipList.append('<option value="">' + ydf.Feature[0].Property.Address + '</option>');
+        //     } else if (ydf.ResultInfo.Count > 1 && ydf.Feature[0].Property.Address.startsWith('東京都')){
+        //         for (var i = 0; i < ydf.ResultInfo.Count; i++) {
+        //             zipList.append('<option value="' + ydf.Feature[i].Property.Address + '">' + ydf.Feature[i].Property.Address + '</option>');
+        //         }
+        //     } else {
+        //         zipList.append('<option value="notFound">該当の郵便番号は見つかりませんでした。</option>');
+        //     }
+        // }
+
 
     </script>
 </apex:page>
