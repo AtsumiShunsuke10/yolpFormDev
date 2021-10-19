@@ -33,11 +33,10 @@
             // 郵便番号検索
             var url = 'https://map.yahooapis.jp/search/zip/V1/zipCodeSearch?';
             var zip_code = $('#zip').val().slice(0, 3) + '-' + $('#zip').val().slice(-4);
-            //id
-            var zip_code = $('#zip').val().slice(0, 3) + '-' + $('#zip').val().slice(-4);
             console.log(zip_code);
             var param = {
-                appid: 'dj00aiZpPXMzUUVKZGRlbnY3SSZzPWNvbnN1bWVyc2VjcmV0Jng9YjY-',
+                appid: '{!$Label.yolp_app_id_1}',
+                //appid: 'dj00aiZpPXMzUUVKZGRlbnY3SSZzPWNvbnN1bWVyc2VjcmV0Jng9YjY-',
                 output: 'json',
                 query: zip_code,
                 results: 100 // 郵便番号検索結果の件数を指定
@@ -56,41 +55,88 @@
             });
         }
 
+
         //住所検索が重複ヒットした場合同じ値のみ追加する
         function dispresultAddress(ydf) {
-            var applicantAddress = $('#applicantAddress');
-            applicantAddress.empty();
-
+            $('#applicantAddress').val(''); 
+            let floors = ['０', '１', '２', '３', '４', '５', '６', '７', '８', '９'];
+            var isMatched = true;
             if (ydf.ResultInfo.Count == 1 && ydf.Feature[0].Property.Address.startsWith('東京都')) {
-                $('textarea[id$="' + applicantAddress + '"]').val(ydf.Feature[0].Property.Address);
-            } else if (ydf.ResultInfo.Count > 1 && ydf.Feature[0].Property.Address.startsWith('東京都')){
-                for (var i = 0; i < ydf.ResultInfo.Count; i++) {
-                    $('textarea[id$="' + applicantAddress + '"]').val(ydf.Feature[i].Property.Address);
+                var rAdrs = ydf.Feature[0].Property.Address;
+                //～丁目を弾く
+                if (rAdrs.includes("（") && rAdrs.includes("丁目") && !(rAdrs.includes("～")) && !(rAdrs.includes("、"))) {
+                    rAdrs = rAdrs.replace("（", "");
+                    rAdrs = rAdrs.replace("）", "");
                 }
+                else if (rAdrs.includes("（") && rAdrs.includes("階")) {
+                    if (rAdrs.includes("不明")) {
+                        var deleteChar = rAdrs.indexOf('（');
+                        rAdrs = rAdrs.substring(0, deleteChar);
+                        console.log(deleteChar);
+                    }
+                    for (i = 0; i < floors.length; i++) {
+                        if (rAdrs.includes(floors[i] + '階')) {
+                            isMatched = false;
+                            break;
+                        }
+                        if (isMatched) {
+                            rAdrs = rAdrs.replace("（", "");
+                            rAdrs = rAdrs.replace("）", "");
+                        }
+                    }
+                }
+                else if (rAdrs.includes('（')) {
+                    var deleteChar = rAdrs.indexOf('（');
+                    rAdrs = rAdrs.substring(0, deleteChar);
+                    console.log(deleteChar);
+                }
+                $('#applicantAddress').val(rAdrs);
+            } else if (ydf.ResultInfo.Count > 1 && ydf.Feature[0].Property.Address.startsWith('東京都')) {
+                var rAdrs = '';
+                var isMatched = true;
+                for (i = 0; ydf.Feature[0].Property.Address.length; i++) {
+                    var iAdrs = ydf.Feature[0].Property.Address.slice(0, i + 1);
+                    for (x = 1; x < ydf.ResultInfo.Count; x++) {
+                        var xAdrs = ydf.Feature[x].Property.Address
+                        var isMatched = true;
+                        if (xAdrs.indexOf(iAdrs)) {
+                            isMatched = false;
+                            break;
+                        }
+                    }
+                    if (isMatched) {
+                        rAdrs = iAdrs;
+                    } else {
+                        break;
+                    }
+                }
+                
+                if (rAdrs.includes("（") && rAdrs.includes("丁目") && !(rAdrs.includes("～")) && !(rAdrs.includes("、"))) {
+                    rAdrs = rAdrs.replace("（", "");
+                    rAdrs = rAdrs.replace("）", "");
+                }
+                else if (rAdrs.includes("（") && rAdrs.includes("階")) {
+                    for (var i = 0; i < floors.length; i++) {
+                        if (rAdrs.includes(floors[i] + '階')) {
+                            rAdrs = rAdrs.replace("（", "");
+                            rAdrs = rAdrs.replace("）", "");
+                        }
+                    }
+                    // for (var i = 0; i < floors.length; i++) {
+                    //     if (!(rAdrs.includes(floors[i]))) {
+                    //         var deleteChar = rAdrs.indexOf('（');
+                    //         rAdrs = rAdrs.substring(0, deleteChar);
+                    //     }
+                    // }
+                }
+                else if (rAdrs.includes('（')) {
+                    var deleteChar = rAdrs.indexOf('（');
+                    rAdrs = rAdrs.substring(0, deleteChar);
+                }
+                $('#applicantAddress').val(rAdrs);
             } else {
-                //エラー制御
+                alert('{!$Label.not_found_post_code}');
             }
         }
-
-        
-
-        // 郵便番号をリスト表示
-        // function dispZipList(ydf) {
-        //     var zipList = $('#ziplist');
-        //     zipList.empty();
-        //     zipList.append('<option value="default">--なし--</option>');
-
-        //     if (ydf.ResultInfo.Count == 1 && ydf.Feature[0].Property.Address.startsWith('東京都')) {
-        //         zipList.append('<option value="">' + ydf.Feature[0].Property.Address + '</option>');
-        //     } else if (ydf.ResultInfo.Count > 1 && ydf.Feature[0].Property.Address.startsWith('東京都')){
-        //         for (var i = 0; i < ydf.ResultInfo.Count; i++) {
-        //             zipList.append('<option value="' + ydf.Feature[i].Property.Address + '">' + ydf.Feature[i].Property.Address + '</option>');
-        //         }
-        //     } else {
-        //         zipList.append('<option value="notFound">該当の郵便番号は見つかりませんでした。</option>');
-        //     }
-        // }
-
-
     </script>
 </apex:page>
